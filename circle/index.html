@@ -1,0 +1,84 @@
+<!doctype html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>game</title>
+<style>
+#pages{
+	width:800px;
+	height:480px;
+	overflow:hidden;
+	position:relative;
+}
+.page{
+	position:absolute;
+	left:0;
+	top:0;
+	width:800px;
+	height:480px;
+	display:-webkit-box;
+	-webkit-box-pack:center;
+	-webkit-box-align:center;
+	background-image:#eee;
+}
+.hidden{
+	display:none;
+}
+.start-button{
+	width: 200px;
+	height:60px;
+	border:#eee 3px solid;
+	background:#3e9;
+	line-height: 60px;
+	display:block;
+}
+#canvas{
+	background:#000;
+}
+.welcome-page{
+	background:url(welcome.png);
+}
+.level-page,
+.over-page{
+	background:#eee;
+}
+.level-page{
+	left:800px;
+	top:0;
+}
+.over-page{
+	left:0;
+	top:480px;
+}
+body{
+	padding:0;
+	margin:0;
+	font-size:48px;
+	font-family:"Microsoft Yahei";
+	text-shadow:1px 1px 2px #666;
+}
+</style>
+</head>
+<body>
+<div id="pages">
+	<div class="game-page page">
+		<canvas id="canvas" width="800" height="480"></canvas>
+	</div>
+	<div class="level-page page">
+		<p>第<span class="level-count"></span>关</p>
+	</div>
+	<div class="over-page page">
+		<p>游戏结束！你通过了<span class="level-count"></span>关</p>
+	</div>
+	<div class="egg-page page hidden">
+		<p>恭喜你进入了彩蛋页面。</p>
+	</div>
+	<div class="welcome-page page">
+		<p style="display:none">最高记录：<span class="best-level"><span></p>
+	</div>
+</div>
+<script src="zepto.js"></script>
+<script src="tween.js"></script>
+<script src="game.js"></script>
+</body>
+</html>

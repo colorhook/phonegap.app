@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html>
+  <head>
+	<meta charset="utf-8">
+    <title>Acceleration Example</title>
+    <script src="phonegap.js"></script>
+<style>
+body{
+	font-size:24px;
+	background:#f2f2f2;
+}
+#accelerometer{
+	padding:20px;
+	background:#3399cc;
+	border-radius: 10px;
+	position:relative;
+}
+p a{
+	display:inline-block;
+	padding: 12px 36px;
+	background:#3366cc;
+	border-radius: 10px;
+	text-decoration:none;
+	color:#EEE;
+	position:relative;
+	top:20px;
+	-webkit-transition: background 0.5s, top 0.5s;
+}
+@media (orientation: landscape) {
+	#accelerometer{
+		position:absolute;
+		right:0;
+	}
+	p a{
+		background:#a11111;
+		position:relative;
+		top:0;
+	}
+}
+</style>
+    <script>
+
+    // The watch id references the current `watchAcceleration`
+    var watchID = null;
+
+    // Wait for PhoneGap to load
+    //
+    document.addEventListener("deviceready", onDeviceReady, false);
+
+    // PhoneGap is ready
+    //
+    function onDeviceReady() {
+        startWatch();
+    }
+
+    // Start watching the acceleration
+    //
+    function startWatch() {
+
+        // Update acceleration every 3 seconds
+        var options = { frequency: 100 };
+
+        watchID = navigator.accelerometer.watchAcceleration(onSuccess, onError, options);
+    }
+
+    // Stop watching the acceleration
+    //
+    function stopWatch() {
+        if (watchID) {
+            navigator.accelerometer.clearWatch(watchID);
+            watchID = null;
+        }
+    }
+
+    // onSuccess: Get a snapshot of the current acceleration
+    //
+    function onSuccess(acceleration) {
+        var element = document.getElementById('accelerometer');
+        element.innerHTML = 'Acceleration X: ' + Math.round(acceleration.x*100)/100 + '<br />' +
+                            'Acceleration Y: ' + Math.round(acceleration.y*100)/100 + '<br />' +
+                            'Acceleration Z: ' + Math.round(acceleration.z*100)/100 + '<br />';
+    }
+
+    // onError: Failed to get the acceleration
+    //
+    function onError() {
+        alert('onError!');
+    }
+
+
+	// Show a custom alert
+    //
+    function showAlert() {
+        navigator.notification.alert(
+            'You are the winner!',  // message
+            'Game Over',            // title
+            'Done'                  // buttonName
+        );
+    }
+
+    // Beep three times
+    //
+    function playBeep() {
+        navigator.notification.beep(3);
+    }
+
+    // Vibrate for 2 seconds
+    //
+    function vibrate() {
+        navigator.notification.vibrate(2000);
+    }
+
+
+    </script>
+  </head>
+  <body>
+    <div id="accelerometer">Waiting for accelerometer...</div>
+	<p><a href="#" onclick="showAlert(); return false;">Show Alert</a></p>
+    <p><a href="#" onclick="playBeep(); return false;">Play Beep</a></p>
+    <p><a href="#" onclick="vibrate(); return false;">Vibrate</a></p>
+  </body>
+</html>
