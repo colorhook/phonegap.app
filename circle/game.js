@@ -29,10 +29,13 @@ var Model = function(){
 	Model.instance = this;
 };
 Model.EVENT_TYPE = "click";
+if('ontouchstart' in window){
+   //Model.EVENT_TYPE = "touch"; 
+}
 Model.INIT = "model:init";
 Model.LEVEL_PASS = "model:level_pass";
 Model.LEVEL_FAIL = "model:level_fail";
-
+Model.BEST_LEVEL_CHANGE = "model:best_level_change";
 Model.prototype = {
 	constructor: Model,
 	
@@ -56,7 +59,9 @@ Model.prototype = {
 	},
 	saveLevel: function(level){
 		if(level > this._bestLevel){
+            this._bestLevel = level;
 			this.setBestLevel(level);
+            Signal.trigger(Model.BEST_LEVEL_CHANGE, [level]);
 		}
 	},
 	reset: function(){
@@ -76,8 +81,12 @@ View.prototype = {
 	init: function(bestLevel){
 		this.initPages();
 		this.initEvents();
-		 TWEEN.start();
+        this.setBestLevel(bestLevel);
+		TWEEN.start();
 	},
+    setBestLevel: function(bestLevel){
+      this.levelPage.find(".best-level").html(bestLevel);  
+    },
 	initPages: function(){
 		this.welcomePage = $(".welcome-page");
 		this.levelPage = $(".level-page");
@@ -93,7 +102,8 @@ View.prototype = {
 		var self = this;
 		this.gamePage.bind(Model.EVENT_TYPE, function(e){
 			if(self.playing){
-				Signal.trigger(View.USER_TAP, [{x: e.x, y:e.y}]);
+				Signal.trigger(View.USER_TAP, [{x:e.clientY-31 , y:(480-e.clientX)}]);
+                //console.log((e.clientY)+":"+(480-e.clientX))
 			}
 		});
 		this.overPage.bind(Model.EVENT_TYPE, function(){
@@ -164,7 +174,7 @@ View.prototype = {
 			}, 300);
 		};
 		this.overPage.find(".level-count").html(level);
-		changeColor(["#000", "#fff", "#000", "#fff", "#000", "#fff"], function(){
+		changeColor(["#333", "#fff", "#333", "#fff", "#333", "#fff"], function(){
 			setTimeout(function(){
 				var position = {top: 480};
 				new TWEEN.Tween(position).easing(TWEEN.Easing.Quadratic.EaseOut).to({top:0}, 1000).onUpdate(function(){
@@ -186,7 +196,7 @@ View.prototype = {
 		ctx.beginPath(); 
 		color = color || "#fff";
 		ctx.fillStyle = color;
-		ctx.strokeStyle = "#000";
+		ctx.strokeStyle = "#333";
 		ctx.beginPath();
 		ctx.arc(circle.x, circle.y, circle.r, 0,  Math.PI*2, true); 
 		ctx.fill();
@@ -205,12 +215,12 @@ var Circle = function(){
 //Controller
 var Controller = function(){
 	this._pos = [];
-	this.min = 20;
+	this.min = 30;
 	this.max = 100;
-	this.width = 800;
+	this.width = 710;
 	this.height = 480;
 	this._internalCount = 0;
-	this._internalMaxCount = 1000;
+	this._internalMaxCount = 100000;
 }
 Controller.prototype = {
 	constructor: Controller,
@@ -277,7 +287,7 @@ Controller.prototype = {
 	}
 };
 //entry point
-(function(){
+var EntryPoint = function(){
 	var model = new Model(),
 		view = new View(),
 		controller = new Controller();
@@ -303,6 +313,7 @@ Controller.prototype = {
 				Signal.trigger(Model.LEVEL_PASS, [model.getLevel()]);
 			}else{
 				Signal.trigger(Model.LEVEL_FAIL,  [model.getLevel()]);
+                controller.reset();
 				model.setLevel(0);
 			}
 		}
@@ -316,7 +327,12 @@ Controller.prototype = {
 			view.showEggShell(model.getLevel());
 		}
 	});
-
+    
+    Signal.bind(Model.BEST_LEVEL_CHANGE, function(bestLevel){
+        view.setBestLevel(bestLevel);
+    })
 	model.init();
 
-})();
+};
+
+EntryPoint();
