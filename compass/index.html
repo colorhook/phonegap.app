@@ -1,0 +1,105 @@
+<!doctype html>
+<head>
+<meta charset="utf-8">
+<title>指南针</title>
+<style>
+html,body {
+	padding:0px;
+	margin:0;
+	height:100%;
+	width:100%;
+	overflow:hidden;
+}
+body{
+	background:#000;
+	text-shadow:0px 1px 1px #ffffff;
+	display: -webkit-box;
+	-webkit-box-pack:center;
+	-webkit-box-align:center;
+}
+#compass{
+	width:400px;
+	height:400px;
+	margin:0 auto;
+	margin-top:45px;
+	background:url(assets/compass.png);
+	-webkit-transition: all 0.5s;
+
+	left:auto;
+	top:auto;
+	margin:0 auto;
+}
+#angle-container{
+	text-align:center;
+	color:#eee;
+	width:200px;
+	height:68px;
+	border-radius:16px 2px;
+	font-size:32px;
+	line-height:68px;
+	background:#a11111;
+	position:absolute;
+	top: 100px;
+	left: 220px;
+	box-shadow: 0 0 8px rgba(255, 0, 0, 0.8),
+				0 0 16px rgba(255, 0, 0, 0.5) inset;
+	-webkit-transition: all 0.5s;
+}
+
+body{
+	background:url(assets/bg-640-960.jpg) no-repeat;
+}
+@media all and (min-width:650px) {
+	#angle-container{
+		right:100px;
+		bottom:100px;
+		left:auto;
+		top:auto;
+	}
+	body{
+		background:url(assets/bg-768-1024.jpg) no-repeat;
+	}
+}
+
+@media all and (orientation:landscape) {
+	#angle-container{
+		left:100px;
+	}
+	body{
+		background:url(assets/bg-960-640.jpg) no-repeat;
+	}
+}
+@media all and (orientation:landscape) and (min-width:650px){
+	body{
+		background:url(assets/bg-1024-768.jpg) no-repeat;
+	}
+}
+
+</style>
+</head>
+<body>
+<div id="angle-container">
+	<span id="angle"></span>
+</div>
+<div id="compass"></div>
+<script>
+var watchID,
+	angleEl = document.getElementById("angle"),
+	compassEl = document.getElementById("compass");
+function startWatch() {
+	watchID = navigator.compass.watchHeading(onSuccess, function(){});
+}
+function getHeadingByAngle(angle){
+	var pos = ["北", "东北", "东", "东南", "南", "西南", "西", "西北"];
+	var index = Math.floor(((angle+360+22.5)%360)/45);
+	return pos[index]+angle+"°";
+};
+function onSuccess(heading) {
+	var angle = Math.round(heading) % 360;
+	angleEl.innerHTML = getHeadingByAngle(angle);
+	compassEl.style["-webkit-transform"] = "rotate("+(-angle)+"deg)";
+}
+document.addEventListener("deviceready", startWatch, false);
+</script>
+</body>
+</html>
