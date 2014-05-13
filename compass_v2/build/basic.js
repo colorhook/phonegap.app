@@ -1,0 +1,1 @@
+console.error("D:/Develop/git/phonegap.app/compass_v2/compass.zip");
